@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Qml/Login.qml</file>
+        <file>Qml/Saved.qml</file>
+        <file>Qml/Toolbar.qml</file>
+        <file>Qml/Drawer.qml</file>
+        <file>Qml/Settings.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>Images/logo.png</file>
+    </qresource>
+</RCC>
