@@ -25,8 +25,19 @@ ApplicationWindow {
         initialItem: Page.Login {
             visible: true
             button.onClicked: {
-                stackView.push("Qml/Saved.qml", {visible: true})
-                toolbar.visible = true
+                loginBackend.getAccessToken()
+//                stackView.push("Qml/Saved.qml", {visible: true})
+//                toolbar.visible = true
+            }
+
+            Page.Captcha {
+                id: captchaDialog
+                captchaImage.source: captchaImage
+            }
+
+            loginBackend.onCaptchaRequest: {
+                console.log(captchaImage)
+                captchaDialog.open()
             }
         }
     }

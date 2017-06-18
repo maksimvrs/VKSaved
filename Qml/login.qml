@@ -1,10 +1,19 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.1
 import QtQuick.Controls.Material 2.1
 import QtQuick.Layouts 1.3
+import LoginBackend 1.0
 
 Rectangle {
     property alias button: button
+    property alias loginBackend: loginBackend
+    property alias captchaImage: loginBackend.captchaSource
+
+    LoginBackend {
+        id: loginBackend
+        login: loginField.text
+        password: passField.text
+    }
 
     ColumnLayout {
         anchors {
@@ -37,7 +46,7 @@ Rectangle {
             maximumLength: 25
             Layout.fillWidth: true
         }
-        Button {
+        Button {            
             id: button
             text: "Войти"
             font.bold: true

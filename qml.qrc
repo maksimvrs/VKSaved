@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>Qml/Login.qml</file>
+        <file>Qml/Captcha.qml</file>
         <file>Qml/Saved.qml</file>
         <file>Qml/Toolbar.qml</file>
         <file>Qml/Drawer.qml</file>
