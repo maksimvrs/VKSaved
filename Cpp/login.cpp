@@ -3,11 +3,21 @@
 Login::Login(QObject *parent) : QObject(parent)
 {
     manager = new QNetworkAccessManager(this);
+
+    connect(this, SIGNAL(connectionComplete()),
+            this, SLOT(saveAccessToken()));
+
+    if (!settings.value("access_token").isNull()) {
+        accessToken = settings.value("access_token").toString();
+        qDebug() << "Access token: " << accessToken;
+        haveAccessToken = true;
+    }
 }
 
 Login::~Login()
 {
     delete manager;
+//    settings.remove("access_token");
 }
 
 void Login::setLogin(QString& _login)
@@ -18,6 +28,12 @@ void Login::setLogin(QString& _login)
 void Login::setPassword(QString& _password)
 {
     password = _password;
+}
+
+bool Login::_haveAccessToken() const
+{
+    qDebug() << "Request haveAccessToken: " << haveAccessToken;
+    return haveAccessToken;
 }
 
 QString Login::getCaptchaSource() const
@@ -35,6 +51,7 @@ void Login::_getAccessToken(QString append = "")
     QUrl request = "https://oauth.vk.com/token?grant_type=password&"
                    "client_id=" + clientID
                  + "&client_secret=" + clientSecret
+                 + "&scpoe=" + scope
                  + "&username=" + login
                  + "&password=" + password
                  + "&v=" + apiVersion
@@ -51,6 +68,7 @@ void Login::_getAccessToken(QString append = "")
 void Login::replyFinished(QNetworkReply *reply)
 {
     QString replyStr = reply->readAll();
+    reply->close();
     qDebug() << "Http GET reply: " << replyStr;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(replyStr.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();
@@ -73,13 +91,20 @@ void Login::replyFinished(QNetworkReply *reply)
 void Login::captcha(QJsonObject& jsonObject)
 {
     qDebug() << "Captcha: " << jsonObject.value("captcha_img").toString();
-    captchaSource = jsonObject.value("captcha_img").toString();
+    captchaSource = jsonObject.value("captcha_img").toString() + "&image.jpg";
     captchaID = jsonObject.value("captcha_sid").toString();
     emit captchaRequest();
 }
 
-void Login::captchaInput(QString &key)
+void Login::captchaInput(QString key)
 {
+    qDebug() << "Captcha input: " << key;
     _getAccessToken("&captcha_sid=" + captchaID
                  + "&captcha_key=" + key);
+}
+
+void Login::saveAccessToken()
+{
+    settings.setValue("access_token", accessToken);
+    qDebug() << "Access token was saved: "<< accessToken;
 }

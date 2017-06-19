@@ -17,7 +17,7 @@ ToolBar {
                 fillMode: Image.Pad
                 horizontalAlignment: Image.AlignHCenter
                 verticalAlignment: Image.AlignVCenter
-                source: stackView.depth > 1 ? "images/back.png" : "images/drawer.png"
+                source: stackView.depth > 2 ? "images/back.png" : "images/drawer.png"
             }
 
 //            contentItem: Rectangle {

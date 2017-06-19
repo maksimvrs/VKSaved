@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QSettings>
 
 class Login : public QObject
 {
@@ -14,7 +15,8 @@ class Login : public QObject
 public:
     Q_PROPERTY(QString login WRITE setLogin)
     Q_PROPERTY(QString password WRITE setPassword)
-    Q_PROPERTY(QString captchaSource READ getCaptchaSource)
+    Q_PROPERTY(QString captchaSource READ getCaptchaSource NOTIFY captchaRequest)
+    Q_PROPERTY(bool haveAccessToken READ _haveAccessToken)
 
     explicit Login(QObject *parent = nullptr);
     /*virtual*/ ~Login();
@@ -25,7 +27,7 @@ public:
 
     Q_INVOKABLE void getAccessToken();
 
-    Q_INVOKABLE void captchaInput(QString&);
+    Q_INVOKABLE void captchaInput(QString);
 
     QString getCaptchaSource() const;
 
@@ -36,10 +38,14 @@ private:
     QString login;
     QString password;
     QString accessToken;
+    QSettings settings;
+    bool haveAccessToken = false;
+    bool _haveAccessToken() const;
 
     // Application
     const QString clientID = "3697615";
     const QString clientSecret = "AlVXZFMUqyrnABp8ncuU";
+    const QString scope = "photos";
 
     // API
     const QString apiVersion = "5.65";
@@ -60,6 +66,7 @@ signals:
 
 private slots:
     void replyFinished(QNetworkReply*);
+    void saveAccessToken();
 };
 
 #endif // LOGIN_HPP

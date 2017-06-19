@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include "Cpp/login.hpp"
+#include "Cpp/saved.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -8,6 +9,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<Login>("LoginBackend", 1, 0, "LoginBackend");
+    qmlRegisterType<Saved>("SavedBackend", 1, 0, "SavedBackend");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));

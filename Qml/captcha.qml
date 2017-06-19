@@ -3,15 +3,12 @@ import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.3
 
 Dialog {
+    property alias key: key
     property alias captchaImage: captchaImage
 
     x: (parent.width - width) / 2
     y: (parent.height - height) / 2
-    parent: ApplicationWindow.overlay
 
-//    focus: true
-    modal: true
-    title: "Captcha"
     standardButtons: Dialog.Ok | Dialog.Cancel
 
     ColumnLayout {
@@ -23,7 +20,7 @@ Dialog {
             Layout.fillWidth: true
         }
         TextField {
-//            focus: true
+            id: key
             placeholderText: "Captcha"
             Layout.fillWidth: true
         }
