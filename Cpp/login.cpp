@@ -10,12 +10,12 @@ Login::Login(QObject *parent) : QObject(parent)
         qDebug() << "Access token: " << accessToken;
         haveAccessToken = true;
     }
+//    settings.remove("access_token");
 }
 
 Login::~Login()
 {
     delete manager;
-//    settings.remove("access_token");
 }
 
 void Login::setLogin(QString& _login)
