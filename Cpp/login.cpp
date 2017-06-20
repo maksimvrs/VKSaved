@@ -2,8 +2,6 @@
 
 Login::Login(QObject *parent) : QObject(parent)
 {
-    manager = new QNetworkAccessManager(this);
-
     connect(this, SIGNAL(connectionComplete()),
             this, SLOT(saveAccessToken()));
 
@@ -57,8 +55,11 @@ void Login::_getAccessToken(QString append = "")
                  + "&v=" + apiVersion
                  + append;
 
+    manager = new QNetworkAccessManager(this);
     connect(manager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(replyFinished(QNetworkReply*)));
+    connect(manager, SIGNAL(finished(QNetworkReply*)),
+            manager, SLOT(deleteLater()));
 
     manager->get(QNetworkRequest(request));
 
@@ -68,7 +69,12 @@ void Login::_getAccessToken(QString append = "")
 void Login::replyFinished(QNetworkReply *reply)
 {
     QString replyStr = reply->readAll();
-    reply->close();
+
+    reply->abort();
+    reply->deleteLater();
+
+    manager->deleteLater();
+
     qDebug() << "Http GET reply: " << replyStr;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(replyStr.toUtf8());
     QJsonObject jsonObject = jsonResponse.object();

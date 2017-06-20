@@ -15,7 +15,7 @@ class Login : public QObject
 public:
     Q_PROPERTY(QString login WRITE setLogin)
     Q_PROPERTY(QString password WRITE setPassword)
-    Q_PROPERTY(QString captchaSource READ getCaptchaSource NOTIFY captchaRequest)
+    Q_PROPERTY(QString captchaSource READ getCaptchaSource)
     Q_PROPERTY(bool haveAccessToken READ _haveAccessToken)
 
     explicit Login(QObject *parent = nullptr);
@@ -30,8 +30,6 @@ public:
     Q_INVOKABLE void captchaInput(QString);
 
     QString getCaptchaSource() const;
-
-    QString captchaSource;
 
 private:
     // User
@@ -52,6 +50,7 @@ private:
 
     // Captcha
     QString captchaID;
+    QString captchaSource;
     void captcha(QJsonObject&);
 
     // Request

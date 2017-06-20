@@ -5,14 +5,29 @@ import QtQuick.Layouts 1.3
 import LoginBackend 1.0
 
 Rectangle {
-    property alias button: button
-    property alias loginBackend: loginBackend
-    property alias captchaImage: loginBackend.captchaSource
+    id: root
+
+    property alias haveAccessToken: loginBackend.haveAccessToken
+    property alias captchaSource: loginBackend.captchaSource
+
+    signal clicked
+    signal captchaRequest
+    signal connectionComplete
+
+    function getAccessToken() {
+        loginBackend.getAccessToken()
+    }
+
+    function captchaInput(key) {
+        loginBackend.captchaInput(key)
+    }
 
     LoginBackend {
         id: loginBackend
         login: loginField.text
         password: passField.text
+        onCaptchaRequest: root.captchaRequest()
+        onConnectionComplete: root.connectionComplete()
     }
 
     ColumnLayout {
@@ -53,6 +68,7 @@ Rectangle {
             highlighted: true
             Material.background: "#5f95d0"
             Layout.fillWidth: true
+            onClicked: root.clicked()
         }
     }
 }

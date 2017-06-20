@@ -19,7 +19,7 @@ ApplicationWindow {
     }
 
     onSceneGraphInitialized: {
-        if (login.loginBackend.haveAccessToken) {
+        if (login.haveAccessToken) {
             stackView.push("Qml/Saved.qml", {visible: true})
             toolbar.visible = true
         }
@@ -27,29 +27,29 @@ ApplicationWindow {
 
     StackView {
         id: stackView
-        anchors.fill: parent
+        anchors.fill: parent 
 
         initialItem: Page.Login {
             id: login
             visible: true
 
-            button.onClicked: {
-                loginBackend.getAccessToken()
-            }
-
             Page.Captcha {
                 id: captchaDialog
-                captchaImage.source: parent.loginBackend.captchaSource
                 onAccepted: {
-                    parent.loginBackend.captchaInput(captchaDialog.key.text)
+                    login.captchaInput(key)
                 }
             }
 
-            loginBackend.onCaptchaRequest: {
+            onClicked: {
+                getAccessToken()
+            }
+
+            onCaptchaRequest: {
+                captchaDialog.source = login.captchaSource
                 captchaDialog.open()
             }
 
-            loginBackend.onConnectionComplete: {
+            onConnectionComplete: {
                 stackView.push("Qml/Saved.qml", {visible: true})
                 toolbar.visible = true
             }
