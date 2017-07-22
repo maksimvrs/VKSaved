@@ -1,13 +1,21 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
         <file>Qml/Login.qml</file>
         <file>Qml/Captcha.qml</file>
         <file>Qml/Saved.qml</file>
         <file>Qml/Toolbar.qml</file>
         <file>Qml/Drawer.qml</file>
         <file>Qml/Settings.qml</file>
-        <file>qtquickcontrols2.conf</file>
         <file>Images/logo.png</file>
+        <file>Images/menuSmall.svg</file>
+        <file>Images/menu.svg</file>
+        <file>Images/settings.svg</file>
+        <file>Images/back.svg</file>
+        <file>Images/save.svg</file>
+        <file>Images/like.svg</file>
+        <file>Images/likeOK.svg</file>
+        <file>Images/saveOK.svg</file>
     </qresource>
 </RCC>

@@ -12,22 +12,16 @@ ToolBar {
         anchors.fill: parent
 
         ToolButton {
-            //Image (Три полоски и назад)
             contentItem: Image {
                 fillMode: Image.Pad
                 horizontalAlignment: Image.AlignHCenter
                 verticalAlignment: Image.AlignVCenter
-                source: stackView.depth > 2 ? "images/back.png" : "images/drawer.png"
+                source: stackView.depth > 2 ? "qrc:/Images/back.svg" : "qrc:/Images/menu.svg"
             }
 
-//            contentItem: Rectangle {
-//                color: "white"
-//            }
-
             onClicked: {
-                if (stackView.depth > 1) {
+                if (stackView.depth > 2) {
                     stackView.pop()
-                    listView.currentIndex = -1
                 } else {
                     drawer.open()
                 }
@@ -46,9 +40,9 @@ ToolBar {
                 fillMode: Image.Pad
                 horizontalAlignment: Image.AlignHCenter
                 verticalAlignment: Image.AlignVCenter
-                source: "qrc:/images/menu.png"
+                source: "qrc:/Images/settings.svg"
             }
-            onClicked: stackView.push("Qml/settings.qml", {visible: true})
+            onClicked: stackView.push("qrc:/Qml/Settings.qml", {visible: true})
         }
     }
 }

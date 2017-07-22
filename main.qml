@@ -18,7 +18,7 @@ ApplicationWindow {
         visible: false
     }
 
-    onSceneGraphInitialized: {
+    Component.onCompleted: {
         if (login.haveAccessToken) {
             stackView.push("Qml/Saved.qml", {visible: true})
             toolbar.visible = true
@@ -27,7 +27,7 @@ ApplicationWindow {
 
     StackView {
         id: stackView
-        anchors.fill: parent 
+        anchors.fill: parent
 
         initialItem: Page.Login {
             id: login
