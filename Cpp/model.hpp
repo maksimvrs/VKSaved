@@ -5,25 +5,33 @@
 #include <QStringList>
 
 #include <QDebug>
+#include <QDateTime>
 
 class Photo
 {
 public:
     Photo(const QString &profilePhoto,
           const QString &profileName,
-          const QString &date,
-          const QString image);
+          const unsigned int &date,
+          const QString &image,
+          const double &ratio);
 
     QString profilePhoto() const;
     QString profileName() const;
-    QString date() const;
+    unsigned int date() const;
+    QString dateString() const;
     QString image() const;
+
+    double ratio() const;
 
 private:
     QString m_profilePhoto;
     QString m_profileName;
-    QString m_date;
+    unsigned int m_date;
     QString m_image;
+
+    // Соотношение высоты и ширины картинки
+    double m_ratio;
 };
 
 class Model : public QAbstractListModel
@@ -34,7 +42,8 @@ public:
         profilePhotoRole = Qt::UserRole + 1,
         profileNameRole,
         dateRole,
-        imageRole
+        imageRole,
+        ratioRole
     };
 
     Model(QObject *parent = 0);

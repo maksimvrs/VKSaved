@@ -1,10 +1,12 @@
-QT += qml quick network
+QT += qml quick network positioning svg
 
 CONFIG += c++11
 
 SOURCES += main.cpp \
     Cpp/login.cpp \
-    Cpp/saved.cpp
+    Cpp/saved.cpp \
+    Cpp/model.cpp \
+    Cpp/vkapi.cpp
 
 RESOURCES += qml.qrc
 
@@ -35,4 +37,6 @@ DISTFILES += \
 
 HEADERS += \
     Cpp/login.hpp \
-    Cpp/saved.hpp
+    Cpp/saved.hpp \
+    Cpp/model.hpp \
+    Cpp/vkapi.hpp

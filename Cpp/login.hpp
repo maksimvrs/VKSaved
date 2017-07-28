@@ -12,12 +12,13 @@
 class Login : public QObject
 {
     Q_OBJECT
-public:
+
     Q_PROPERTY(QString login WRITE setLogin)
     Q_PROPERTY(QString password WRITE setPassword)
     Q_PROPERTY(QString captchaSource READ getCaptchaSource)
     Q_PROPERTY(bool haveAccessToken READ _haveAccessToken)
 
+public:
     explicit Login(QObject *parent = nullptr);
     /*virtual*/ ~Login();
 

@@ -1,34 +1,38 @@
-import QtQuick 2.7
-import QtQuick.Controls 2.0
-import QtQuick.Controls.Material 2.1
+import QtQuick 2.9
+import QtQuick.Controls 2.2
+import QtQuick.Controls.Material 2.2
 import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
+import QtQuick.Window 2.2
 import SavedBackend 1.0
 
 ListView {
     id: listView
     Material.background: "Gray"
-    spacing: 20
-    model: ListModel {
-        ListElement {
-            profilePhoto: "http://vk.com/images/camera_c.gif"
-            profileName: "Profile Name"
-            image: "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg"
-        }
-        ListElement {
-            profilePhoto: "http://vk.com/images/camera_c.gif"
-            profileName: "Profile Name"
-            image: "https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg"
-        }
+    spacing: 10
+    smooth: true
+
+    SavedBackend {
+        id: backend
     }
+
+    model: backend.model
 
     delegate: Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         height: header.height + image.height + footer.height
 
+        layer.enabled: true
+        layer.effect: DropShadow {
+            color: "#9B9B9B"
+            transparentBorder: true
+            verticalOffset: 1
+        }
+
         ColumnLayout {
             width: listView.width
+            spacing: 0
 
             ToolBar {
                 id: header
@@ -74,14 +78,27 @@ ListView {
 
                     }
 
-                    Label {
-                        id: profileName
-                        text: model.profileName
-                        font.pixelSize: 20
-                        font.bold: true
-                        color: "#5f95d0"
-                        elide: Label.ElideRight
-                        Layout.fillWidth: true
+                    ColumnLayout {
+                        spacing: 5
+
+                        Label {
+                            id: profileName
+                            text: model.profileName
+                            font.pixelSize: 17
+                            font.bold: true
+                            color: "#5f95d0"
+                            elide: Label.ElideRight
+                            Layout.fillWidth: true
+                        }
+
+                        Label {
+                            id: date
+                            text: model.date
+                            font.pixelSize: 13
+                            color: "#9B9B9B"
+                            elide: Label.ElideRight
+                            Layout.fillWidth: true
+                        }
                     }
 
                     ToolButton {
@@ -89,7 +106,7 @@ ListView {
                             fillMode: Image.Pad
                             horizontalAlignment: Image.AlignHCenter
                             verticalAlignment: Image.AlignVCenter
-                            source: "qrc:/Images/menu_small.svg"
+                            source: "qrc:/Images/menuSmall.svg"
                         }
 
                         onClicked: optionsMenu.open()
@@ -112,6 +129,13 @@ ListView {
                 }
             }
 
+            BusyIndicator {
+                id: busyIndicator
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                running: image.status === Image.Loading
+            }
+
             Image {
                 id: image
                 smooth: true
@@ -121,7 +145,19 @@ ListView {
                     top: header.bottom
                     bottom: footer.top
                 }
+
                 source: model.image
+
+                onSourceChanged: {
+                    busyIndicator.visible = true;
+                }
+
+                onProgressChanged: {
+                    if(progress == 1.0)
+                        busyIndicator.visible = false;
+                }
+
+                sourceSize.height: width * model.ratio
             }
 
             RowLayout {
@@ -139,6 +175,7 @@ ListView {
                     contentItem: Image {
                         fillMode: Image.Pad
                         source: like.ok ? "qrc:/Images/likeOK.svg" : "qrc:/Images/like.svg"
+                        sourceSize: Qt.size(20, 20)
                     }
 
                     background: Rectangle {
@@ -165,6 +202,7 @@ ListView {
                     contentItem: Image {
                         fillMode: Image.Pad
                         source: save.ok ? "qrc:/Images/saveOK.svg" : "qrc:/Images/save.svg"
+                        sourceSize: Qt.size(20, 20)
                     }
 
                     background: Rectangle {

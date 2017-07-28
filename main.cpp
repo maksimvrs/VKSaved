@@ -1,7 +1,9 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include "Cpp/login.hpp"
 #include "Cpp/saved.hpp"
+#include <Cpp/model.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -13,6 +15,12 @@ int main(int argc, char *argv[])
     qmlRegisterType<Saved>("CaptchaBackend", 1, 0, "CaptchaBackend");
 
     QQmlApplicationEngine engine;
+
+    Model model;
+
+    QQmlContext *context = new QQmlContext(engine.rootContext());
+    context->setContextProperty("photosModel", &model);
+
     engine.load(QUrl(QLatin1String("qrc:/main.qml")));
     if (engine.rootObjects().isEmpty())
         return -1;
