@@ -2,19 +2,18 @@
 
 VKApi::VKApi(QObject *parent) : QObject(parent)
 {
-    manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(replyFinished(QNetworkReply*)));
 }
 
 
 VKApi::~VKApi()
 {
-    delete manager;
 }
 
 void VKApi::get(QString addRequest)
 {
+    manager = new QNetworkAccessManager(this);
+    connect(manager, SIGNAL(finished(QNetworkReply*)),
+            this, SLOT(replyFinished(QNetworkReply*)));
     QUrl request = QString("https://api.vk.com/method/"
                       + addRequest
                       + "&v=" + QString::number(version));
@@ -29,7 +28,14 @@ QJsonValue VKApi::getNow(QString addRequest)
     QUrl request = QString("https://api.vk.com/method/"
                       + addRequest
                       + "&v=" + QString::number(version));
+
+    if (time.elapsed() < mInterval) {
+        QThread::msleep(static_cast<unsigned long>(mInterval - time.elapsed()));
+    }
+
     QNetworkReply *reply = managerTemp->get(QNetworkRequest(request));
+
+    time = QTime::currentTime();
 
     QEventLoop loop;
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
@@ -47,41 +53,24 @@ void VKApi::replyFinished(QNetworkReply *reply)
 
 QJsonValue VKApi::processResponse(QNetworkReply *reply)
 {
-    if (reply->error() != QNetworkReply::NoError) {
-
-        qWarning() << "Request error: " << reply->errorString();
-        // Request error
-
-        return QJsonObject();
-    }
+    if (reply->error() != QNetworkReply::NoError)
+        throw RequestError(reply->errorString());
 
     QString replyStr = reply->readAll();
 
+    reply->manager()->deleteLater();
     reply->deleteLater();
 
     qDebug() << "Http get reply: " << replyStr;
 
     QJsonObject jsonObject = QJsonDocument::fromJson(replyStr.toUtf8()).object();
     if (jsonObject.value("error") != QJsonValue::Undefined) {
-
-        qWarning() << "Http get ERROR: : " << jsonObject.value("error");
-
-        QString errorCode = jsonObject.value("error_code").toString(),
-                errorMessage = jsonObject.value("error_msg").toString();
-
-        qWarning() << "VK error";
-        // VK error
-
-        return QJsonObject();
+        jsonObject = jsonObject.value("error").toObject();
+        throw VKError(jsonObject.value("error_code").toInt(0),
+                      jsonObject.value("error_msg").toString("VK undefined error."));
     }
-    else if (jsonObject.value("response") != QJsonValue::Undefined) {
+    else if (jsonObject.value("response") != QJsonValue::Undefined)
         return jsonObject.value("response");
-    }
-    else {
-
-        qWarning() << "VK undefined error";
-        // VK undefined error
-
-        return QJsonObject();
-    }
+    else
+        throw VKError(0, "VK unknown error.");
 }

@@ -10,7 +10,6 @@ Login::Login(QObject *parent) : QObject(parent)
         qDebug() << "Access token: " << accessToken;
         haveAccessToken = true;
     }
-//    settings.remove("access_token");
 }
 
 Login::~Login()
@@ -42,6 +41,11 @@ QString Login::getCaptchaSource() const
 void Login::getAccessToken()
 {
     _getAccessToken("");
+}
+
+QString Login::readAccessToken() const
+{
+    return accessToken;
 }
 
 void Login::_getAccessToken(QString append = "")
@@ -113,4 +117,10 @@ void Login::saveAccessToken()
 {
     settings.setValue("access_token", accessToken);
     qDebug() << "Access token was saved: "<< accessToken;
+}
+
+void Login::exit()
+{
+    haveAccessToken = false;
+    settings.remove("access_token");
 }

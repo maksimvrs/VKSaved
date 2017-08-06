@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.3
 import "Qml" as Page
 
 ApplicationWindow {
+    id: main
     visible: true
     width: 360
     height: 520
@@ -16,6 +17,12 @@ ApplicationWindow {
     header: Page.Toolbar {
         id: toolbar
         visible: false
+        settingsButton.onClicked:
+            stackView.push("qrc:/Qml/Settings.qml", {visible: true})
+    }
+
+    Page.Drawer {
+        id: drawer
     }
 
     Component.onCompleted: {
@@ -37,10 +44,18 @@ ApplicationWindow {
                 id: captchaDialog
                 onAccepted: {
                     login.captchaInput(key)
+                    login.clicked
+                    captchaDialog.clear()
+                }
+                onRejected: {
+                    login.loading.visible = false
+                    login.loading.running = false
                 }
             }
 
             onClicked: {
+                login.loading.visible = true
+                login.loading.running = true
                 getAccessToken()
             }
 
@@ -52,6 +67,10 @@ ApplicationWindow {
             onConnectionComplete: {
                 stackView.push("Qml/Saved.qml", {visible: true})
                 toolbar.visible = true
+
+                login.loading.visible = false
+                login.loading.running = false
+                login.clear()
             }
         }
     }

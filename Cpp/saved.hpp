@@ -6,6 +6,8 @@
 #include <QJsonArray>
 #include <QSettings>
 #include <QPair>
+#include <QThread>
+#include <QCoreApplication>
 
 #include "Cpp/model.hpp"
 #include "Cpp/vkapi.hpp"
@@ -14,6 +16,7 @@ class Saved : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QAbstractListModel *model READ getModel NOTIFY modelChanged)
+    Q_PROPERTY(QString accessToken WRITE setAccessToken)
 
 public:
     explicit Saved(QObject *parent = nullptr);
@@ -21,6 +24,9 @@ public:
 
 private:
     QString accessToken;
+    void setAccessToken(QString);
+
+    void start();
 
     QVector<int> friends;
 

@@ -15,6 +15,7 @@ class Login : public QObject
 
     Q_PROPERTY(QString login WRITE setLogin)
     Q_PROPERTY(QString password WRITE setPassword)
+    Q_PROPERTY(QString accessToken READ readAccessToken NOTIFY accessTokenChanged)
     Q_PROPERTY(QString captchaSource READ getCaptchaSource)
     Q_PROPERTY(bool haveAccessToken READ _haveAccessToken)
 
@@ -29,6 +30,8 @@ public:
     Q_INVOKABLE void getAccessToken();
 
     Q_INVOKABLE void captchaInput(QString);
+
+    Q_INVOKABLE void exit();
 
     QString getCaptchaSource() const;
 
@@ -60,9 +63,12 @@ private:
 
     void _getAccessToken(QString);
 
+    QString readAccessToken() const;
+
 signals:
     void captchaRequest();
     void connectionComplete();
+    void accessTokenChanged();
 
 private slots:
     void replyFinished(QNetworkReply*);

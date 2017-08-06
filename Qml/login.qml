@@ -9,10 +9,25 @@ Rectangle {
 
     property alias haveAccessToken: loginBackend.haveAccessToken
     property alias captchaSource: loginBackend.captchaSource
+    property alias loading: busyIndicator
+    property string accessToken: loginBackend.accessToken
 
     signal clicked
     signal captchaRequest
     signal connectionComplete
+
+    function accessToken() {
+        return readAccessToken()
+    }
+
+    function exit() {
+        loginBackend.exit()
+    }
+
+    function clear() {
+        loginField.clear()
+        passField.clear()
+    }
 
     function getAccessToken() {
         loginBackend.getAccessToken()
@@ -27,7 +42,17 @@ Rectangle {
         login: loginField.text
         password: passField.text
         onCaptchaRequest: root.captchaRequest()
-        onConnectionComplete: root.connectionComplete()
+        onConnectionComplete: {
+            root.connectionComplete()
+        }
+    }
+
+    BusyIndicator {
+        id: busyIndicator
+        visible: false
+        running: false
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
     }
 
     ColumnLayout {
@@ -37,6 +62,7 @@ Rectangle {
             leftMargin: 40
             rightMargin: 40
         }
+
         spacing: 10
 
         Image {
@@ -61,6 +87,7 @@ Rectangle {
             maximumLength: 25
             Layout.fillWidth: true
         }
+
         Button {            
             id: button
             text: "Войти"

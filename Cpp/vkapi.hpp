@@ -8,6 +8,9 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QEventLoop>
+#include <QThread>
+
+#include <Cpp/exceptions.hpp>
 
 class VKApi : public QObject
 {
@@ -23,6 +26,9 @@ private:
     QNetworkAccessManager *manager;
 
     QJsonValue processResponse(QNetworkReply*);
+
+    QTime time;
+    static constexpr int mInterval = 334;
 
     static constexpr double version = 5.67;
 

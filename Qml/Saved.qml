@@ -14,6 +14,7 @@ ListView {
 
     SavedBackend {
         id: backend
+        accessToken: login.accessToken
     }
 
     model: backend.model
@@ -157,7 +158,7 @@ ListView {
                         busyIndicator.visible = false;
                 }
 
-                sourceSize.height: width * model.ratio
+                sourceSize.height: image.width * model.ratio
             }
 
             RowLayout {

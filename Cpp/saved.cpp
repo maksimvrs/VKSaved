@@ -1,4 +1,4 @@
-#include "saved.hpp"
+  #include "saved.hpp"
 
 Saved::Saved(QObject *parent) : QObject(parent)
 {
@@ -8,17 +8,40 @@ Saved::Saved(QObject *parent) : QObject(parent)
     connect(api, SIGNAL(finished(QJsonValue)),
             this, SLOT(replyFinished(QJsonValue)));
 
-    accessToken = "695433a19c4adbdeb5eb24172589d3423b44f3e5a049af586c26b47028345235cbfbdba27ccd02bf6f781";
-    qDebug() << getNameAndPhoto(448499);
-    qDebug() << getNameAndPhoto(3471583);
-    getImageAndDate(3471583);
-    getImageAndDate(448499);
 }
 
 Saved::~Saved()
 {
     delete model;
     delete api;
+}
+
+void Saved::setAccessToken(QString token)
+{
+    accessToken = token;
+    start();
+}
+
+void Saved::start()
+{
+    getFriends();
+    for (QVector<int>::iterator it = friends.begin(); it != friends.end(); ++it) {
+        try {
+            getImageAndDate(*it);
+        } catch (VKError error) {
+            qDebug() << error.code() << error.message();
+            switch (error.code()) {
+            case 6:
+                --it;
+            }
+        } catch (RequestError error) {
+            qDebug() << error.message();
+        }
+    }
+
+
+//    getImageAndDate(3471583);
+//    getImageAndDate(448499);
 }
 
 Model *Saved::getModel()
@@ -53,7 +76,7 @@ QPair<QString, QString> Saved::getNameAndPhoto(int id)
 
 void Saved::getImageAndDate(int id)
 {
-    api->get("photos.get?"
+    api->getNow("photos.get?"
              "owner_id="
            + QString::number(id)
            + "&album_id=saved"
