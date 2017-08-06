@@ -4,6 +4,7 @@
 #include <QString>
 #include <exception>
 
+// Base error
 struct SavedError{
 public:
     explicit SavedError(const QString&);
@@ -15,6 +16,7 @@ private:
 
 };
 
+// Error vk api
 struct VKError: SavedError {
 public:
     explicit VKError(const int&, const QString&);
@@ -24,6 +26,8 @@ private:
     const int errorCode;
 };
 
+
+// Qt or network error
 struct RequestError: SavedError {
 public:
     explicit RequestError(const QString&);

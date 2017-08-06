@@ -2,66 +2,46 @@
 
 VKApi::VKApi(QObject *parent) : QObject(parent)
 {
+    manager = new QNetworkAccessManager(this);
+    loop = new QEventLoop(this);
+    time = new QTime;
 }
 
 
 VKApi::~VKApi()
 {
+    delete time;
+    delete loop;
+    delete manager;
 }
 
-void VKApi::get(QString addRequest)
+QJsonValue VKApi::get(QString addRequest)
 {
-    manager = new QNetworkAccessManager(this);
-    connect(manager, SIGNAL(finished(QNetworkReply*)),
-            this, SLOT(replyFinished(QNetworkReply*)));
-    QUrl request = QString("https://api.vk.com/method/"
-                      + addRequest
-                      + "&v=" + QString::number(version));
-    manager->get(QNetworkRequest(request));
-
-    qDebug() << "Http get request: " << request.toString();
-}
-
-QJsonValue VKApi::getNow(QString addRequest)
-{
-    QNetworkAccessManager *managerTemp = new QNetworkAccessManager(this);
     QUrl request = QString("https://api.vk.com/method/"
                       + addRequest
                       + "&v=" + QString::number(version));
 
-    if (time.elapsed() < mInterval) {
-        QThread::msleep(static_cast<unsigned long>(mInterval - time.elapsed()));
+    if (time->elapsed() < mInterval) {
+        QThread::msleep(static_cast<unsigned long>(mInterval - time->elapsed()));
     }
 
-    QNetworkReply *reply = managerTemp->get(QNetworkRequest(request));
+    reply = manager->get(QNetworkRequest(request));
+    connect(reply, SIGNAL(finished()), loop, SLOT(quit()));
+    *time = QTime::currentTime();
+    loop->exec();
+    disconnect(reply, SIGNAL(finished()), loop, SLOT(quit()));
 
-    time = QTime::currentTime();
-
-    QEventLoop loop;
-    connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    loop.exec();
-
-    managerTemp->deleteLater();
-
-    return processResponse(reply);
+    return parseResponse(reply);
 }
 
-void VKApi::replyFinished(QNetworkReply *reply)
-{
-    emit finished(processResponse(reply));
-}
-
-QJsonValue VKApi::processResponse(QNetworkReply *reply)
+QJsonValue VKApi::parseResponse(QNetworkReply *reply)
 {
     if (reply->error() != QNetworkReply::NoError)
         throw RequestError(reply->errorString());
 
     QString replyStr = reply->readAll();
 
-    reply->manager()->deleteLater();
     reply->deleteLater();
-
-    qDebug() << "Http get reply: " << replyStr;
 
     QJsonObject jsonObject = QJsonDocument::fromJson(replyStr.toUtf8()).object();
     if (jsonObject.value("error") != QJsonValue::Undefined) {

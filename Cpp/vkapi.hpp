@@ -18,26 +18,19 @@ class VKApi : public QObject
 public:
     explicit VKApi(QObject *parent = nullptr);
     ~VKApi();
-
-    void get(QString);
-    QJsonValue getNow(QString);
+    QJsonValue get(QString);
 
 private:
     QNetworkAccessManager *manager;
+    QNetworkReply *reply;
+    QEventLoop *loop;
+    QTime *time;
+    QJsonValue parseResponse(QNetworkReply*);
 
-    QJsonValue processResponse(QNetworkReply*);
-
-    QTime time;
+    // Configuration
     static constexpr int mInterval = 334;
 
     static constexpr double version = 5.67;
-
-signals:
-    void finished(QJsonValue);
-    void error(int, QString);
-
-private slots:
-    void replyFinished(QNetworkReply*);
 
 };
 

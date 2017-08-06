@@ -26,24 +26,22 @@ private:
     QString accessToken;
     void setAccessToken(QString);
 
-    void start();
-
     QVector<int> friends;
+    void getFriends();
+
+    QVector<int> users;
 
     Model *model;
     Model *getModel();
 
-    void getFriends();
-
-    void getImageAndDate(int);
-    QPair<QString, QString> getNameAndPhoto(int);
+    void start();
+    void getSaved(int);
+    QPair<QString, QString> getAccountInfo(int);
 
     VKApi *api;
+
 signals:
     void modelChanged();
-
-private slots:
-    void replyFinished(QJsonValue);
 
 };
 

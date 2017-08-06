@@ -4,16 +4,12 @@ Saved::Saved(QObject *parent) : QObject(parent)
 {
     model = new Model;
     api = new VKApi;
-
-    connect(api, SIGNAL(finished(QJsonValue)),
-            this, SLOT(replyFinished(QJsonValue)));
-
 }
 
 Saved::~Saved()
 {
-    delete model;
     delete api;
+    delete model;
 }
 
 void Saved::setAccessToken(QString token)
@@ -27,7 +23,7 @@ void Saved::start()
     getFriends();
     for (QVector<int>::iterator it = friends.begin(); it != friends.end(); ++it) {
         try {
-            getImageAndDate(*it);
+            getSaved(*it);
         } catch (VKError error) {
             qDebug() << error.code() << error.message();
             switch (error.code()) {
@@ -40,8 +36,8 @@ void Saved::start()
     }
 
 
-//    getImageAndDate(3471583);
-//    getImageAndDate(448499);
+//    getSaved(3471583);
+//    getSaved(448499);
 }
 
 Model *Saved::getModel()
@@ -51,7 +47,7 @@ Model *Saved::getModel()
 
 void Saved::getFriends()
 {
-    QJsonObject jsonObject = api->getNow("friends.get?"
+    QJsonObject jsonObject = api->get("friends.get?"
                                          "access_token="
                                          + accessToken).toObject();
     int count = jsonObject.value("count").toInt(0);
@@ -61,9 +57,9 @@ void Saved::getFriends()
     }
 }
 
-QPair<QString, QString> Saved::getNameAndPhoto(int id)
+QPair<QString, QString> Saved::getAccountInfo(int id)
 {
-    QJsonObject jsonObject = api->getNow("users.get?user_ids="
+    QJsonObject jsonObject = api->get("users.get?user_ids="
                                          + QString::number(id)
                                          + "&fields=photo_50"
                                            "&access_token="
@@ -74,18 +70,17 @@ QPair<QString, QString> Saved::getNameAndPhoto(int id)
     return QPair<QString, QString>(name, photo);
 }
 
-void Saved::getImageAndDate(int id)
+void Saved::getSaved(int id)
 {
-    api->getNow("photos.get?"
-             "owner_id="
-           + QString::number(id)
-           + "&album_id=saved"
-             "&access_token="
-           + accessToken);
-}
+    QJsonValue jsonValue = api->get("photos.get?"
+                                    "owner_id="
+                                  + QString::number(id)
+                                  + "&album_id=saved"
+                                    "&access_token="
+                                  + accessToken);
 
-void Saved::replyFinished(QJsonValue jsonValue)
-{
+    qDebug() << "Done";
+
     int count = jsonValue.toObject().value("count").toInt(0);
     if (count > 1000) {
         // Reply request
@@ -93,7 +88,7 @@ void Saved::replyFinished(QJsonValue jsonValue)
 
     QJsonArray jsonArray = jsonValue.toObject().value("items").toArray();
 
-    QPair<QString, QString> pair = getNameAndPhoto(jsonArray.at(0).toObject().value("owner_id").toInt());
+    QPair<QString, QString> pair = getAccountInfo(jsonArray.at(0).toObject().value("owner_id").toInt());
     QString name = pair.first;
     QString photo = pair.second;
 
