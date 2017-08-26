@@ -17,5 +17,7 @@
         <file>Images/like.svg</file>
         <file>Images/likeOK.svg</file>
         <file>Images/saveOK.svg</file>
+        <file>Qml/Refresh.qml</file>
+        <file>Images/refresh.png</file>
     </qresource>
 </RCC>

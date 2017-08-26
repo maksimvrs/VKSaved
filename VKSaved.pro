@@ -7,7 +7,8 @@ SOURCES += main.cpp \
     Cpp/saved.cpp \
     Cpp/model.cpp \
     Cpp/vkapi.cpp \
-    Cpp/exceptions.cpp
+    Cpp/exceptions.cpp \
+    Cpp/account.cpp
 
 RESOURCES += qml.qrc
 
@@ -41,4 +42,5 @@ HEADERS += \
     Cpp/saved.hpp \
     Cpp/model.hpp \
     Cpp/vkapi.hpp \
-    Cpp/exceptions.hpp
+    Cpp/exceptions.hpp \
+    Cpp/account.hpp

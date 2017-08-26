@@ -10,15 +10,10 @@ Rectangle {
     property alias haveAccessToken: loginBackend.haveAccessToken
     property alias captchaSource: loginBackend.captchaSource
     property alias loading: busyIndicator
-    property string accessToken: loginBackend.accessToken
 
     signal clicked
     signal captchaRequest
     signal connectionComplete
-
-    function accessToken() {
-        return readAccessToken()
-    }
 
     function exit() {
         loginBackend.exit()

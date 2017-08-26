@@ -1,8 +1,10 @@
 import QtQuick 2.7
-import QtQuick.Controls 2.0
-import QtQuick.Controls.Material 2.1
+import QtQuick.Controls 2.2
+import QtQuick.Controls.Material 2.2
 import QtQuick.Layouts 1.3
+
 import "Qml" as Page
+import SavedBackend 1.0
 
 ApplicationWindow {
     id: main
@@ -18,17 +20,34 @@ ApplicationWindow {
         id: toolbar
         visible: false
         settingsButton.onClicked:
-            stackView.push("qrc:/Qml/Settings.qml", {visible: true})
+            stackView.push(settings, {visible: true})
+    }
+
+    Page.Settings {
+        id: settings
     }
 
     Page.Drawer {
         id: drawer
     }
 
+    Page.Saved {
+        id: saved
+        function run() {
+            stackView.push(saved)
+            toolbar.visible = true
+            toolbar.settingsButton.visible = true
+            saved.readAccessToken()
+//            saved.loading = true
+            saved.delegateVisible = true
+            saved.start()
+        }
+    }
+
     Component.onCompleted: {
         if (login.haveAccessToken) {
-            stackView.push("Qml/Saved.qml", {visible: true})
-            toolbar.visible = true
+            saved.run()
+
         }
     }
 
@@ -65,8 +84,7 @@ ApplicationWindow {
             }
 
             onConnectionComplete: {
-                stackView.push("Qml/Saved.qml", {visible: true})
-                toolbar.visible = true
+                saved.run()
 
                 login.loading.visible = false
                 login.loading.running = false

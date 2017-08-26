@@ -49,6 +49,7 @@ public:
     Model(QObject *parent = 0);
 
     void addPhoto(const Photo &photo);
+    void removePhoto(int);
 
     int rowCount(const QModelIndex & parent = QModelIndex()) const;
 

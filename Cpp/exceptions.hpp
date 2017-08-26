@@ -2,7 +2,6 @@
 #define EXCEPTION_HPP
 
 #include <QString>
-#include <exception>
 
 // Base error
 struct SavedError{

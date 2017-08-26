@@ -7,19 +7,62 @@ import QtQuick.Window 2.2
 import SavedBackend 1.0
 
 ListView {
-    id: listView
+    id: root
+
+    property bool delegateVisible: false
+    property alias loading: progressBar.visible
+
+    function start() {
+        backend.update()
+    }
+
+    function readAccessToken() {
+        backend.readAccessToken()
+    }
+
     Material.background: "Gray"
     spacing: 10
     smooth: true
 
-    SavedBackend {
-        id: backend
-        accessToken: login.accessToken
-    }
-
     model: backend.model
 
+    cacheBuffer: Screen.desktopAvailableHeight * 3
+
+    Component.onCompleted: {
+        currentIndex = -1
+    }
+
+    SavedBackend {
+        id: backend
+        onProgressChanged: {
+            ++progressBar.value
+            if (progressBar.value === progressBar.to) {
+                progressBar.visible = false
+                root.delegateVisible = true
+            }
+        }
+    }
+
+    ProgressBar {
+        id: progressBar
+        to: backend.accountsCount - 1
+        visible: false
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
+    onDragEnded: if (refresh.refresh) {
+                     backend.updateSaved()
+                     console.log("OK")
+                 }
+
+    Refresh {
+        id: refresh
+        y: -root.contentY - height
+    }
+
     delegate: Rectangle {
+        visible: delegateVisible
         anchors.left: parent.left
         anchors.right: parent.right
         height: header.height + image.height + footer.height
@@ -32,7 +75,7 @@ ListView {
         }
 
         ColumnLayout {
-            width: listView.width
+            width: root.width
             spacing: 0
 
             ToolBar {
@@ -114,7 +157,7 @@ ListView {
 
                         Menu {
                             id: optionsMenu
-                            x: listView.width - width
+                            x: root.width - width
                             transformOrigin: Menu.TopRight
 
                             MenuItem {
@@ -130,11 +173,16 @@ ListView {
                 }
             }
 
-            BusyIndicator {
+            Rectangle {
                 id: busyIndicator
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.verticalCenter: parent.verticalCenter
-                running: image.status === Image.Loading
+                Layout.fillWidth: true
+                height: parent.width * model.ratio
+                BusyIndicator {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    running: image.status === Image.Loading
+                    height: 300
+                }
             }
 
             Image {

@@ -54,12 +54,21 @@ void Model::addPhoto(const Photo &photo)
     for (QList<Photo>::iterator it = m_photos.begin(); it != m_photos.end(); ++it) {
         if (photo.date() > (*it).date()) {
             m_photos.insert(it, photo);
-            goto breakPoint;
+            endInsertRows();
+            emit dataChanged(index(0, 0), index(rowCount() - 1, 0));
+            return;
         }
     }
     m_photos.append(photo);
-    breakPoint:
     endInsertRows();
+    emit dataChanged(index(0, 0), index(rowCount() - 1, 0));
+}
+
+void Model::removePhoto(int row)
+{
+    beginRemoveRows(QModelIndex(), row, row);
+    m_photos.removeAt(row);
+    endRemoveRows();
 }
 
 int Model::rowCount(const QModelIndex & parent) const {

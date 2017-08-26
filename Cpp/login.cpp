@@ -2,9 +2,7 @@
 
 Login::Login(QObject *parent) : QObject(parent)
 {
-    connect(this, SIGNAL(connectionComplete()),
-            this, SLOT(saveAccessToken()));
-
+    settings.setDefaultFormat(QSettings::NativeFormat);
     if (!settings.value("access_token").isNull()) {
         accessToken = settings.value("access_token").toString();
         qDebug() << "Access token: " << accessToken;
@@ -41,11 +39,6 @@ QString Login::getCaptchaSource() const
 void Login::getAccessToken()
 {
     _getAccessToken("");
-}
-
-QString Login::readAccessToken() const
-{
-    return accessToken;
 }
 
 void Login::_getAccessToken(QString append = "")
@@ -89,6 +82,7 @@ void Login::replyFinished(QNetworkReply *reply)
     }
     else if (jsonObject.value("access_token") != QJsonValue::Undefined){
         accessToken = jsonObject.value("access_token").toString();
+        saveAccessToken();
         emit connectionComplete();
         qDebug() << "Connection complete!";
         qDebug() << "Access token: " << accessToken;
@@ -116,6 +110,7 @@ void Login::captchaInput(QString key)
 void Login::saveAccessToken()
 {
     settings.setValue("access_token", accessToken);
+    settings.sync();
     qDebug() << "Access token was saved: "<< accessToken;
 }
 

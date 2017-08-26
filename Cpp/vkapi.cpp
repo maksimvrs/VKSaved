@@ -1,16 +1,16 @@
 #include "vkapi.hpp"
 
+QTime *VKApi::time = new QTime;
+
 VKApi::VKApi(QObject *parent) : QObject(parent)
 {
     manager = new QNetworkAccessManager(this);
     loop = new QEventLoop(this);
-    time = new QTime;
 }
 
 
 VKApi::~VKApi()
 {
-    delete time;
     delete loop;
     delete manager;
 }
@@ -36,8 +36,11 @@ QJsonValue VKApi::get(QString addRequest)
 
 QJsonValue VKApi::parseResponse(QNetworkReply *reply)
 {
-    if (reply->error() != QNetworkReply::NoError)
+    if (reply->error() != QNetworkReply::NoError) {
+        qDebug() << "ERROR:" << __FILE__ << __LINE__
+                 << reply->errorString();
         throw RequestError(reply->errorString());
+    }
 
     QString replyStr = reply->readAll();
 
@@ -46,11 +49,17 @@ QJsonValue VKApi::parseResponse(QNetworkReply *reply)
     QJsonObject jsonObject = QJsonDocument::fromJson(replyStr.toUtf8()).object();
     if (jsonObject.value("error") != QJsonValue::Undefined) {
         jsonObject = jsonObject.value("error").toObject();
+        qDebug() << "ERROR:" << __FILE__ << __LINE__ << "VK: "
+                 << jsonObject.value("error_code").toInt(0)
+                 << jsonObject.value("error_msg").toString("VK undefined error.");
         throw VKError(jsonObject.value("error_code").toInt(0),
                       jsonObject.value("error_msg").toString("VK undefined error."));
     }
     else if (jsonObject.value("response") != QJsonValue::Undefined)
         return jsonObject.value("response");
-    else
+    else {
+        qDebug() << "ERROR:" << __FILE__ << __LINE__
+                 << "VK unknown error.";
         throw VKError(0, "VK unknown error.");
+    }
 }

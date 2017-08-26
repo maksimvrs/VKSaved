@@ -8,6 +8,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QSettings>
+#include <QTextCodec>
 
 class Login : public QObject
 {
@@ -15,7 +16,6 @@ class Login : public QObject
 
     Q_PROPERTY(QString login WRITE setLogin)
     Q_PROPERTY(QString password WRITE setPassword)
-    Q_PROPERTY(QString accessToken READ readAccessToken NOTIFY accessTokenChanged)
     Q_PROPERTY(QString captchaSource READ getCaptchaSource)
     Q_PROPERTY(bool haveAccessToken READ _haveAccessToken)
 
@@ -62,17 +62,15 @@ private:
     bool httpRequestAborted;
 
     void _getAccessToken(QString);
-
-    QString readAccessToken() const;
+    void saveAccessToken();
 
 signals:
     void captchaRequest();
     void connectionComplete();
-    void accessTokenChanged();
 
 private slots:
     void replyFinished(QNetworkReply*);
-    void saveAccessToken();
+
 };
 
 #endif // LOGIN_HPP

@@ -24,10 +24,9 @@ private:
     QNetworkAccessManager *manager;
     QNetworkReply *reply;
     QEventLoop *loop;
-    QTime *time;
+    static QTime *time;
     QJsonValue parseResponse(QNetworkReply*);
 
-    // Configuration
     static constexpr int mInterval = 334;
 
     static constexpr double version = 5.67;
